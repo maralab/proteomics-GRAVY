@@ -1,0 +1,18 @@
+# compute protein GRAVY score (hydrophobicity) of protein FASTA file using BioPython
+# grand average of hydropathy: sum of hydropathy values of all amino acids divided by the protein length
+from Bio import SeqIO
+from Bio.Alphabet import IUPAC
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
+import csv
+handle = open('/home/___/HUMAN.fasta', 'r')
+out = open('/home/___/HUMAN_GRAVY_Biopython', 'w')
+w = csv.writer(out, delimiter='\t')
+for record in SeqIO.parse(handle, 'fasta', IUPAC.extended_protein):
+    records_split = record.id.split('|')
+    record_str = str(record.seq)
+    record_str_noXUZB = record_str.replace('X', '').replace('U', '').replace('Z', '').replace('B', '')
+# delete non-standard amino acids codes sometimes present in FASTA files     
+    analyzed_seq_noXUZB = ProteinAnalysis(str(record_str_noXUZB))
+    w.writerow([records_split[1], analyzed_seq_noXUZB.gravy()])
+handle.close()
+out.close() 
